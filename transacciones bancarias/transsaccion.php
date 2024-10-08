@@ -1,11 +1,11 @@
 <?php
 session_start();
-require 'conexion_bd.php';
+
 
 if (!isset($_SESSION['usuario_id'])) {
     echo "Debe iniciar sesión para realizar una transacción.";
     exit();
-}
+
 
 $cuenta_remitente = $_SESSION['numero_cuenta'];
 
@@ -13,61 +13,36 @@ $cuenta_destinatario = $_POST['cuenta_destinatario'];
 $monto = $_POST['monto'];
 $concepto = $_POST['concepto'];
 
-if ($monto <= 0) {
-    echo "El monto debe ser mayor que 0.";
-    exit();
-}
 
-$query = "SELECT * FROM usuarios WHERE numero_cuenta = ?";
-$stmt = $conn->prepare($query);
-$stmt->bind_param("s", $cuenta_destinatario);
-$stmt->execute();
-$result = $stmt->get_result();
 
-if ($result->num_rows == 0) {
-    echo "La cuenta del destinatario no existe.";
-    exit();
-}
+$archivo_json = 'transacciones.js';
 
-$query = "SELECT saldo FROM usuarios WHERE numero_cuenta = ?";
-$stmt = $conn->prepare($query);
-$stmt->bind_param("s", $cuenta_remitente);
-$stmt->execute();
-$result = $stmt->get_result();
-$remitente = $result->fetch_assoc();
+if (file_exists($archivo_json)) {
+    $contenido_actual = file_get_contents($archivo_json);
+    $array_datos = json_decode($contenido_actual, true);
+} else 
+    $array_datos = array();
+    
+    $datos = array(
+        'Cuenta Destinatorio'=> $cuenta_destinatario,
+        'Cuenta Remitente '=> $cuenta_remitente,
+        'Monto' => $monto,
+        'Concepto' => $concepto,
+    );
 
-$saldo_remitente = $remitente['saldo'];
 
-if ($saldo_remitente < $monto) {
-    echo "Saldo insuficiente.";
-    exit();
-}
+    $array_datos[] = $datos;
 
-$conn->autocommit(FALSE); 
+    file_put_contents($archivo_json, json_encode($array_datos, JSON_PRETTY_PRINT));
 
-$query = "UPDATE usuarios SET saldo = saldo - ? WHERE numero_cuenta = ?";
-$stmt = $conn->prepare($query);
-$stmt->bind_param("ds", $monto, $cuenta_remitente);
-$stmt->execute();
+    echo "<h2>Transaccion exitosa:</h2>";
+    echo "Cuenta del Destinatario: " . $cuenta_destinatario . "<br>";
+    echo "Monto a Transferir: " . $monto . "<br>";
+    echo "Concepto: " . $concepto . "<br>";
+}else {
+    echo "Todos los campos son obligatorios.";
+ }
 
-$query = "UPDATE usuarios SET saldo = saldo + ? WHERE numero_cuenta = ?";
-$stmt = $conn->prepare($query);
-$stmt->bind_param("ds", $monto, $cuenta_destinatario);
-$stmt->execute();
 
-$query = "INSERT INTO transacciones (cuenta_remitente, cuenta_destinatario, monto, concepto) 
-          VALUES (?, ?, ?, ?)";
-$stmt = $conn->prepare($query);
-$stmt->bind_param("ssds", $cuenta_remitente, $cuenta_destinatario, $monto, $concepto);
 
-if ($stmt->execute()) {
-    $conn->commit(); 
-    echo "Transacción realizada con éxito.";
-} else {
-    $conn->rollback(); 
-    echo "Error en la transacción.";
-}
-
-$stmt->close();
-$conn->close();
 ?>

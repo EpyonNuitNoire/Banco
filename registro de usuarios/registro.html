@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro de Usuarios</title>
     <script src="registro.js"></script>
-    <link rel="stylesheet" href="estilos.css">
+    <link rel="stylesheet" href="registro.css">
 </head>
 <style>
 body {
@@ -108,7 +108,7 @@ input:focus {
 </style>
 <body>
 
-    <form id="registerForm" method="POST" action="conexion_bd.php" onsubmit="return validarFormulario();">
+    <form id="registerForm" method="POST" action="registro.php" onsubmit="return validarFormulario();">
         <h1>Registro de Usuario</h1> <br>
         <label for="nombre">Nombre Completo:</label>
         <input type="text" id="nombre" name="nombre_completo" required><br><br>
@@ -124,7 +124,5 @@ input:focus {
         
         <input type="submit" value="Registrarse">
     </form>
-    
 </body>
-
 </html>

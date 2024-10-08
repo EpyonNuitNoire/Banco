@@ -1,29 +1,39 @@
 <?php
-require 'conexion_bd.php';
+
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $correo = $_POST['correo_electronico'];
     $contraseña = $_POST['contraseña'];
     
-    $query = "SELECT * FROM usuarios WHERE correo_electronico = ?";
-    $stmt = $conn->prepare($query);
-    $stmt->bind_param("s", $correo);
-    $stmt->execute();
-    $result = $stmt->get_result();
+  
+
+
+    $archivo_json = 'login.js';
     
-    if ($result->num_rows == 1) {
-        $usuario = $result->fetch_assoc();
+    if (file_exists($archivo_json)) {
+        $contenido_actual = file_get_contents($archivo_json);
+        $array_datos = json_decode($contenido_actual, true);
+    } else 
+        $array_datos = array();
+
+        $datos = array(
+            'correo' => $correo,
+            'contraseña' => $contraseña
+           );
+    
+    
+        $array_datos[] = $datos;
+    
+        file_put_contents($archivo_json, json_encode($array_datos, JSON_PRETTY_PRINT));
+    
+        echo "<h2>Inicio de sesion exitoso:</h2>";
+        echo "Correo Electronico: " . $correo . "<br>";
+        echo "Contraseña: " . $contraseña . "<br>";
         
-        if (password_verify($contraseña, $usuario['contraseña'])) {
-            echo "Login exitoso. Bienvenido " . $usuario['nombre_completo'];
-        } else {
-            echo "Contraseña incorrecta.";
-        }
-    } else {
-        echo "Correo no registrado.";
+        }else {
+        echo "Todos los campos son obligatorios.";
     }
-    
-    $stmt->close();
-    $conn->close();
-}
+ 
+
+
 ?>

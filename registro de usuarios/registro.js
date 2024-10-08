@@ -1,18 +1,17 @@
-function validarFormulario() {
-    let contraseña = document.getElementById("contraseña").value;
-    let confirmarContraseña = document.getElementById("confirmar_contraseña").value;
-    
-    let regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/;
-    if (!regex.test(contraseña)) {
-        alert("La contraseña debe tener al menos 8 caracteres, incluyendo mayúsculas, minúsculas y un número.");
-        return false;
+[
+    {
+        "nombre": "Dante Sparda",
+        "correo ": "pizzaguy@gmail.com",
+        "contrase\u00f1a": "Pz123456"
+    },
+    {
+        "nombre": "Dante Sparda",
+        "correo ": "pizzaguy@gmail.com",
+        "contrase\u00f1a": "Pz123456"
+    },
+    {
+        "nombre": "Vergil",
+        "correo ": "larryka@gmail.com",
+        "contrase\u00f1a": "Power9000"
     }
-    
-   
-    if (contraseña !== confirmarContraseña) {
-        alert("Las contraseñas no coinciden.");
-        return false;
-    }
-    
-    return true;
-}
+]
